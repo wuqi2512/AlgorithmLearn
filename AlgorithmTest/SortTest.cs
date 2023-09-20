@@ -1,6 +1,6 @@
-using Algorithm.Sort;
+using System.Data;
 using System.Diagnostics;
-using System.Reflection;
+using static Algorithm.Sort.SortAlgorithm;
 
 namespace AlgorithmTest
 {
@@ -11,60 +11,69 @@ namespace AlgorithmTest
         [DataRow(1000, 10000, 1000)]
         public void TestAllSortAlgorithm(int min, int max, int length)
         {
-            var array = GenerateRandomIntArray(min, max, 1000, false);
+            var array = Util.GenerateRandomIntArray(min, max, 1000, false);
             Stopwatch timer = new Stopwatch();
+            Action<IComparable[]>[] sorts = new Action<IComparable[]>[]
+            {
+                HeapSort,
+                InsertionSort,
+                InPlace_MergeSort,
+                TopDown_MergeSort,
+                BottomUp_MergeSort,
+                QuickSort,
+                SelectionSort,
+                ShellSort,
+            };
 
-            MethodInfo[] methods = typeof(SortAlgorithm).GetMethods();
+            long[] time = new long[sorts.Length];
+            bool[] success = new bool[sorts.Length];
+            string[] arrayStr = new string[sorts.Length];
+            int NumberPad = max.ToString().Length + 2;
+
+            for (int i = 0; i < sorts.Length; i++)
+            {
+                var copyArray = new IComparable[array.Length];
+                Array.Copy(array, copyArray, array.Length);
+
+                timer.Restart();
+                sorts[i].Invoke(copyArray);
+                timer.Stop();
+
+                time[i] = timer.ElapsedTicks;
+                success[i] = IsSorted(copyArray);
+                string temp = string.Empty;
+                for (int j = 0; j < copyArray.Length && j < 100; j++)
+                {
+                    temp += copyArray[j].ToString().PadLeft(NumberPad);
+                }
+                arrayStr[i] = temp;
+            }
+
             Console.WriteLine($"Range: [{min}, {max}), Length: {length}");
-            foreach (MethodInfo method in methods)
-            {
-                if (method.Name.EndsWith("Sort"))
-                {
-                    var copy = new IComparable[array.Length];
-                    Array.Copy(array, copy, array.Length);
-                    SortMethodTest(method, copy, timer);
+            string table = Util.DataTableToVerticalTableText(CreateDataTable(sorts, time, success), 15);
+            Console.WriteLine(table);
 
-                    Console.Write($"{method.Name}:".PadRight(20) + timer.ElapsedTicks.ToString().PadLeft(10) + " Ticks ");
-                    Console.Write($"{SortAlgorithm.IsSorted(copy)}:  ");
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        Console.Write(array[i] + "  ");
-                        if (i == 99)
-                        {
-                            Console.Write(" ...");
-                            break;
-                        }
-                    }
-                    Console.WriteLine();
-                }
+            for (int i = 0; i < sorts.Length; i++)
+            {
+                Console.Write(sorts[i].Method.Name.PadRight(20));
+                Console.WriteLine(arrayStr[i]);
             }
         }
 
-        public static long SortMethodTest(MethodInfo method, IComparable[] array, Stopwatch timer)
+        private DataTable CreateDataTable(Action<IComparable[]>[] sorts, long[] time, bool[] success)
         {
-            timer.Restart();
-            method.Invoke(null, new object[] { array });
-            timer.Stop();
+            DataTable dataTable = new DataTable("SortTestTable");
 
-            return timer.ElapsedTicks;
-        }
+            dataTable.Columns.Add("Algorithm");
+            dataTable.Columns.Add("Ticks");
+            dataTable.Columns.Add("Success");
 
-        public static int[] GenerateRandomIntArray(int min, int max, int length, bool canBeRepeated)
-        {
-            Random random = new Random(Guid.NewGuid().GetHashCode());
-            List<int> list = new List<int>();
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < sorts.Length; i++)
             {
-                int toAdd = random.Next(min, max);
-                if (!canBeRepeated && list.Contains(toAdd))
-                {
-                    i--;
-                    continue;
-                }
-                list.Add(toAdd);
+                dataTable.Rows.Add(sorts[i].Method.Name, time[i], success[i]);
             }
 
-            return list.ToArray();
+            return dataTable;
         }
     }
 }
