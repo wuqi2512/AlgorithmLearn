@@ -11,7 +11,12 @@ namespace AlgorithmTest
         public void TestAllST(int min, int max, int length)
         {
             Dictionary<int, int> dic = new Dictionary<int, int>();
-            ISymbolTable<int, int>[] sts = new ISymbolTable<int, int>[] { new BST<int, int>(), new BinarySearchST<int, int>(), new LinearProbingHashST<int, int>() };
+            ISymbolTable<int, int>[] sts = new ISymbolTable<int, int>[]
+            {
+                new BST<int, int>(),
+                new BinarySearchST<int, int>(),
+                new LinearProbingHashST<int, int>()
+            };
 
             // 添加数据
             var datas = Util.GenerateRandomIntArray(min, max, length, true);

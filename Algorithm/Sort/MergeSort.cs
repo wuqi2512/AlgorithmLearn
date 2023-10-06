@@ -2,11 +2,6 @@
 {
     public static partial class SortAlgorithm
     {
-        /// <summary>
-        /// 原地自顶向下的归并排序
-        /// <para> 描述：使用内存反转(O(1))实现自顶向下的归并排序，本算法中使用 Array.Reverse()(O(n)) 实现内存反转的效果 </para>
-        /// <para> 特点： </para>
-        /// </summary>
         public static void InPlace_MergeSort(IComparable[] array)
         {
             InPlace_MergeRecursion(array, 0, array.Length - 1);
@@ -60,11 +55,6 @@
         }
 
 
-        /// <summary>
-        /// 自顶向下的归并排序
-        /// <para> 描述：用递归实现的归并排序 </para>
-        /// <para> 特点： </para>
-        /// </summary>
         public static void TopDown_MergeSort(IComparable[] array)
         {
             IComparable[] auxiliary = new IComparable[array.Length];
@@ -105,11 +95,7 @@
         }
 
 
-        /// <summary>
-        /// 自底向上的排序
-        /// <para> 描述：用迭代实现的归并排序 </para>
-        /// <para> 特点：适合用于链表排序，能实现为原地排序 </para>
-        /// </summary>
+
         public static void BottomUp_MergeSort(IComparable[] array)
         {
             IComparable[] auxiliary = new IComparable[array.Length];

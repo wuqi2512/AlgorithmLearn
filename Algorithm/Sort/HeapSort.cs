@@ -3,7 +3,7 @@
     public static partial class SortAlgorithm
     {
         /// <summary>
-        /// 从零开始
+        /// 从0开始开始排序的
         /// </summary>
         /// <param name="array"></param>
         public static void HeapSort(IComparable[] array)
